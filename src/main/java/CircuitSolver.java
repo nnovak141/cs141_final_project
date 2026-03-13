@@ -53,7 +53,9 @@ public class CircuitSolver extends Application {
         newBtn.setOnAction(e->newCircuit());
         Button checkAnswerBtn = new Button("Check Answers");
         checkAnswerBtn.setOnAction(e->checkAnswers());
-        buttonBox.getChildren().addAll(newBtn, checkAnswerBtn);
+        Button showAnswerBtn = new Button("Show Answer Key");
+        showAnswerBtn.setOnAction(e->showAnswers());
+        buttonBox.getChildren().addAll(newBtn, checkAnswerBtn, showAnswerBtn);
         
         // call on display to populate the GUI
         // this can fail if the required circuit images are not found
@@ -88,6 +90,11 @@ public class CircuitSolver extends Application {
 	private void checkAnswers() {
 		this.display.checkAnswers(calculate.getCircuitData());
 	}
+	
+	// calls on display to show the answer key
+	private void showAnswers() {
+		this.display.showAnswers(calculate.getCircuitData());
+	}
 }
 
 // A class for displaying on the GUI
@@ -115,6 +122,7 @@ class Display {
 	private ImageView switchAOpenImg = new ImageView();
 	private ImageView switchAClosedImg = new ImageView();
 	private ImageView switchBClosedImg = new ImageView();
+	private TextArea answerKeyTxtArea = new TextArea();
 	
 	public Display(Stage stage) {
 		this.stage = stage;
@@ -123,11 +131,12 @@ class Display {
 	// builds up the intial display 
 	public void populateUI(HBox buttonBox) throws FileNotFoundException {
 		int uiWidth = 1280;
-		int uiHeight = 550;
+		int uiHeight = 600;
 		
     	// build up the UI with controls
         Label titleTextLbl = new Label("CS&141 Final Project - Circuit Solver");
-        Label instructionLbl = new Label("Determine the voltage and current across each resistor");
+        Label instructionLbl = new Label("Determine the voltage and current across each resistor; " + 
+        		"answer must be within 2% to be considered correct");
         
         VBox titleBox = new VBox(10);
         titleBox.getChildren().addAll(titleTextLbl, instructionLbl);
@@ -209,9 +218,12 @@ class Display {
         circuitPane.getChildren().addAll(qna, v1Lbl, i1Lbl, 
         		r1Lbl, r2Lbl,r3Lbl,r4Lbl,r5Lbl, switchAOpenImg, switchAClosedImg, switchBClosedImg);
         
+        answerKeyTxtArea.setMaxSize(1000, 100);
+        answerKeyTxtArea.setVisible(false);
+        
         // this is the top left of the GUI, showing the name and intro
         VBox headerBox = new VBox(10);
-        headerBox.getChildren().addAll(titleBox, buttonBox, circuitPane);
+        headerBox.getChildren().addAll(titleBox, buttonBox, circuitPane, answerKeyTxtArea);
         headerBox.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
         
         StackPane stackPane = new StackPane();
@@ -260,6 +272,23 @@ class Display {
 		res4IAnswer.setText(null);
 		res5IAnswer.setStyle("-fx-border-color: gray;");
 		res5IAnswer.setText(null);
+		answerKeyTxtArea.setText(null);
+		answerKeyTxtArea.setVisible(false);
+	}
+	
+	// this is a last-minute addition to display the correct
+	// solution in an answer key
+	public void showAnswers(CircuitData circuitData) {
+    	String answerKeyText = "";
+
+    	answerKeyText += "r1: " + circuitData.res1.getVoltage() + "V; " + circuitData.res1.getCurrent() + "A\n";
+    	answerKeyText += "r2: " + circuitData.res2.getVoltage() + "V; " + circuitData.res2.getCurrent() + "A\n";
+    	answerKeyText += "r3: " + circuitData.res3.getVoltage() + "V; " + circuitData.res3.getCurrent() + "A\n";
+    	answerKeyText += "r4: " + circuitData.res4.getVoltage() + "V; " + circuitData.res4.getCurrent() + "A\n";
+    	answerKeyText += "r5: " + circuitData.res5.getVoltage() + "V; " + circuitData.res5.getCurrent() + "A\n";
+    	
+    	answerKeyTxtArea.setVisible(true);
+    	answerKeyTxtArea.setText(answerKeyText);
 	}
 	
 	// this takes in the values entered by the user on the GUI
@@ -415,7 +444,7 @@ class Calculate {
 			double r4r5Current = parallelVoltage/r4r5Series;
 			circuitData.res4.setCurrent(r4r5Current);
 			circuitData.res4.setVoltage(r4r5Current * circuitData.res4.resistance);
-			circuitData.res5.setCurrent(r4r5Current * circuitData.res5.resistance);
+			circuitData.res5.setCurrent(r4r5Current);
 			circuitData.res5.setVoltage(r4r5Current * circuitData.res5.resistance);
 		}
 		// this is the case where we have current source and no parallel path
@@ -464,18 +493,9 @@ class Calculate {
 			double r4r5Current = parallelVoltage/r4r5Series;
 			circuitData.res4.setCurrent(r4r5Current);
 			circuitData.res4.setVoltage(r4r5Current * circuitData.res4.resistance);
-			circuitData.res5.setCurrent(r4r5Current * circuitData.res5.resistance);
+			circuitData.res5.setCurrent(r4r5Current);
 			circuitData.res5.setVoltage(r4r5Current * circuitData.res5.resistance);
 		}
-		
-		// ~displays the solved circuit values~ 
-		// commented out, used for debugging but probably should be left in for future testing as well
-//		System.out.println("the solved circuit is: ");
-//		System.out.println("r1: " + circuitData.res1.getVoltage() + "V; " + circuitData.res1.getCurrent() + "A");
-//		System.out.println("r2: " + circuitData.res2.getVoltage() + "V; " + circuitData.res2.getCurrent() + "A");
-//		System.out.println("r3: " + circuitData.res3.getVoltage() + "V; " + circuitData.res3.getCurrent() + "A");
-//		System.out.println("r4: " + circuitData.res4.getVoltage() + "V; " + circuitData.res4.getCurrent() + "A");
-//		System.out.println("r5: " + circuitData.res5.getVoltage() + "V; " + circuitData.res5.getCurrent() + "A");
 	}
 }
 
