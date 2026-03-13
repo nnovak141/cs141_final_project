@@ -142,10 +142,10 @@ class Display {
         titleBox.getChildren().addAll(titleTextLbl, instructionLbl);
         
         // this is the displayed circuit images and switches
-        Image circuitTemplateImage = new Image(new FileInputStream("./circuit.png"));
-        Image switchAOpenImage = new Image(new FileInputStream("./switchAopen.png"));
-        Image switchAClosedImage = new Image(new FileInputStream("./switchAclosed.png"));
-    	Image switchBClosedImage = new Image(new FileInputStream("./switchBclosed.png"));
+        Image circuitTemplateImage = new Image(getClass().getResource("/circuit.png").toExternalForm());
+        Image switchAOpenImage = new Image(getClass().getResource("/switchAopen.png").toExternalForm());
+        Image switchAClosedImage = new Image(getClass().getResource("/switchAclosed.png").toExternalForm());
+    	Image switchBClosedImage = new Image(getClass().getResource("/switchBclosed.png").toExternalForm());
         ImageView circuitView = new ImageView(circuitTemplateImage);
         switchAOpenImg.setImage(switchAOpenImage);
         switchAClosedImg.setImage(switchAClosedImage);
